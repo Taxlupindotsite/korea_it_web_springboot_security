@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -43,6 +44,34 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http.cors(Customizer.withDefaults()); // 위에서 만든 cors 설정을 security에 적용함.
+//      47줄 : csrf를 사용하지 않겠다. 람다식 사용
+        http.csrf(csrf-> csrf.disable());
+
+//  CSRF란?
+//  사용자가 의도하지 않은 요청을 공격자가 유도해서 서버에 전달하도록 하는 공격방식
+//  -끄는 이유
+//  우리는 JWT 방식 또는 무상태(Stateless)인증이기 때문에
+//  세션이 없고, 쿠키도 안 쓰고, 토큰 기반이기 떄문에 CSRF 자체가 성립이 안됨
+
+    http.sessionManagement(Session -> Session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+
+//    SSR 렌더링 로그인 방식 비활성화
+    http.formLogin(formLogin->formLogin.disable());
+
+    //  http 프로토콜 기본 로그인 방식 비활성화
+    http.httpBasic(httpBasic->httpBasic.disable());
+
+//    SSR 로그아웃 비활성화
+    http.logout(logout -> logout.disable());
+
+//    특정 요청 URL에 대한 권한 설정
+        http.authorizeHttpRequests(auth-> {
+//            auth.requestMatchers("/post").permitAll();
+            auth.anyRequest().authenticated();
+        });
+
+        return http.build();
     }
 
 
