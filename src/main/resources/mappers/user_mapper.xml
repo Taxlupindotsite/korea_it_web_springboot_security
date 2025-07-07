@@ -9,6 +9,15 @@
         user_tb
         VALUES (0, #{username}, #{password}, #{email});
     </insert>
+    <select id="getUserByUserId">
+        select
+        *
+    from
+        user_tb
+        where
+        user_id = #{userId}
+
+    </select>
 
 
 
