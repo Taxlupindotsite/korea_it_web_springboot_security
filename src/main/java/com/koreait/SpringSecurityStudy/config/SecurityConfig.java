@@ -1,12 +1,15 @@
 package com.koreait.SpringSecurityStudy.config;
 
-
+import com.koreait.SpringSecurityStudy.security.filter.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -15,6 +18,16 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 public class SecurityConfig {
 
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+//    비밀번호를 안전하게 암호화(해싱)하고, 검증하는 역할
+//    단방향 해시, 복호화 불가능
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder(){
+        return new BCryptPasswordEncoder();
+
+    }
 //    CorsConfigurationSource() 설정은 spring security에서
 //    CORS(Cross-Origin Resource Sharing)을 처리하기 위한 설정임.
 //    브라우저가 보안상 다른 도메인의 리소스 요청을 제한하는 정책.
@@ -65,15 +78,15 @@ public class SecurityConfig {
 //    SSR 로그아웃 비활성화
     http.logout(logout -> logout.disable());
 
+    http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
 //    특정 요청 URL에 대한 권한 설정
         http.authorizeHttpRequests(auth-> {
-//            auth.requestMatchers("/post").permitAll();
+            auth.requestMatchers("/auth/test" , "/auth/signup").permitAll();
             auth.anyRequest().authenticated();
         });
 
         return http.build();
     }
-
-
 
 }
