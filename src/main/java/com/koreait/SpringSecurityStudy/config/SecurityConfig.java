@@ -82,11 +82,12 @@ public class SecurityConfig {
 
 //    특정 요청 URL에 대한 권한 설정
         http.authorizeHttpRequests(auth-> {
-            auth.requestMatchers("/auth/test" , "/auth/signup").permitAll();
+            auth.requestMatchers("/auth/test" , "/auth/signup", "/auth/signin").permitAll();
             auth.anyRequest().authenticated();
         });
 
         return http.build();
     }
+
 
 }

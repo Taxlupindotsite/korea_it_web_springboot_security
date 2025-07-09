@@ -3,10 +3,12 @@ package com.koreait.SpringSecurityStudy.dto;
 import com.koreait.SpringSecurityStudy.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 
 public class SignupReqDto {
     private String username;
