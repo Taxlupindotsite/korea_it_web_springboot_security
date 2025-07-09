@@ -20,7 +20,7 @@
     <select id="getUserByUserId" resultMap="UserResultMap">
         select user_id, username, password, email
         from user_tb
-        where username = #{username}
+        where user_id = #{userId}
     </select>
 
     <select id="getUserByUsername" resultMap="UserResultMap">
