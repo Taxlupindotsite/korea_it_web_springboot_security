@@ -24,7 +24,6 @@ public class PrincipalUser implements UserDetails {
     private String email;
     private List<UserRole> userRoles;
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return userRoles.stream().map
