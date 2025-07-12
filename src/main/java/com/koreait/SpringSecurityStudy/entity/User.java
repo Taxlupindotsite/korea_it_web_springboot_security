@@ -14,7 +14,6 @@ import java.util.List;
 @Builder
 
 public class User {
-
     private Integer userId;
     private String username;
     @JsonIgnore

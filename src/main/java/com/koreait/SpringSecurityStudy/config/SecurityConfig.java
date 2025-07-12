@@ -81,9 +81,13 @@ public class SecurityConfig {
     http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 //    특정 요청 URL에 대한 권한 설정
-        http.authorizeHttpRequests(auth-> {
-            auth.requestMatchers("/auth/test" , "/auth/signup", "/auth/signin").permitAll();
-            auth.anyRequest().authenticated();
+    http.authorizeHttpRequests(auth-> {
+    auth.requestMatchers("/auth/test").hasRole("ADMIN");
+//    권한을 ROLE_ADMIN , ROLE_USER 처럼 저장했다면 -> hasRole("ADMIN") 가능
+//    권한을 그냥 ADMIN, User 이렇게 저장했다면 -> hasAuthority("ADMIN") 사용
+
+        auth.requestMatchers("/auth/signup","/auth/signin").permitAll();
+        auth.anyRequest().authenticated();
         });
 
         return http.build();

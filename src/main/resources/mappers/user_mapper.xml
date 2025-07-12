@@ -88,6 +88,24 @@
         ut.username = #{username};
     </select>
 
+    <update id="updateEmail">
+        update
+            user_tb
+        set
+            email = #{email}
+        where
+            user_id = #{userId};
+    </update>
+
+    <update id="updatePassword">
+        update
+            user_tb
+        set
+            password = #{password}
+        where
+            user_id = #{userId};
+
+    </update>
 
 
 </mapper>
