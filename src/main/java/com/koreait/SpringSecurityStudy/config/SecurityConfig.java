@@ -1,6 +1,8 @@
 package com.koreait.SpringSecurityStudy.config;
 
 import com.koreait.SpringSecurityStudy.security.filter.JwtAuthenticationFilter;
+import com.koreait.SpringSecurityStudy.security.handler.OAuth2SuccessHandler;
+import com.koreait.SpringSecurityStudy.service.OAuth2PrincipalUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +22,12 @@ public class SecurityConfig {
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Autowired
+    private OAuth2PrincipalUserService oAuth2PrincipalUserService;
+
+    @Autowired
+    private OAuth2SuccessHandler oAuth2SuccessHandler;
 
 //    비밀번호를 안전하게 암호화(해싱)하고, 검증하는 역할
 //    단방향 해시, 복호화 불가능
@@ -86,9 +94,27 @@ public class SecurityConfig {
 //    권한을 ROLE_ADMIN , ROLE_USER 처럼 저장했다면 -> hasRole("ADMIN") 가능
 //    권한을 그냥 ADMIN, User 이렇게 저장했다면 -> hasAuthority("ADMIN") 사용
 
-        auth.requestMatchers("/auth/signup","/auth/signin").permitAll();
+        auth.requestMatchers("/auth/signup",
+                "/auth/signin",
+                "/ouath2/**",
+                "/login/oauth2/**").permitAll();
         auth.anyRequest().authenticated();
         });
+
+
+//  구글 로그인 연동
+
+//  요청이 들어오면 SC의 filterChain을 탐
+//  여기서 여러 필터 중 하나가, Oauth2를 감지함
+//  감지되면 해당 provider의 로그인 페이지로 리디렉션됨.
+
+    http.oauth2Login(oauth2 ->
+//   OAuth2 로그인 요청이 성공하고, 사용자 정보를 가져오는 과정을 설정함.
+    oauth2.userInfoEndpoint(userInfo -> userInfo.userService(oAuth2PrincipalUserService))
+//    사용자 정보 요청이 완료되면, 이 커스텀 서비스로 OAuth2User를 처리하겠다고 설정
+            .successHandler(oAuth2SuccessHandler)
+//    OAuth2 인증이 최종적으로 성공한 후,(사용자 정보 파싱이 끝난 후) 실행한 핸들러 설정
+    );
 
         return http.build();
     }
